@@ -189,6 +189,14 @@ class VanillaMoneyFieldTestCase(TestCase):
         null_instance = NullMoneyFieldModel.objects.create()
         self.assertEquals(null_instance.field, None)
 
+    def testStringWithNoTranslationsDeactivated(self):
+        from django.utils import translation
+        translation.deactivate_all()
+        self.assertIsNone(translation.get_language())
+        model = ModelWithVanillaMoneyField.objects.create(money=Money('100.0'))
+        str(model.money)
+
+
 
 class RelatedModelsTestCase(TestCase):
 

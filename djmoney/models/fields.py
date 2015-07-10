@@ -100,6 +100,9 @@ class MoneyPatched(Money):
             super(MoneyPatched, self).__rmod__(other))
 
     def __get_current_locale(self):
+        if not translation.get_language():
+            return None
+
         locale = translation.to_locale(translation.get_language())
 
         if _FORMATTER.get_formatting_definition(locale):
