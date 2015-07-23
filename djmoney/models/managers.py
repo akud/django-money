@@ -40,11 +40,6 @@ def _get_clean_name(name):
 
 
 def _get_field(model, name):
-    if django.VERSION[0] >= 1 and django.VERSION[1] >= 8:
-        # Django 1.8+ - can use something like 
-        # expression.output_field.get_internal_field() == 'Money..'
-        raise NotImplementedError("Django 1.8+ support is not implemented.")
-
     from django.db.models.fields import FieldDoesNotExist
 
     # Create a fake query object so we can easily work out what field
@@ -78,8 +73,8 @@ def _get_field(model, name):
                     parts.pop()
                     break
 
-    if django.VERSION[0] >= 1 and django.VERSION[1] in (6, 7):
-        # Django 1.6-1.7
+    if django.VERSION[0] >= 1 and django.VERSION[1] in (6, 7, 8):
+        # Django 1.6-1.8
         field = qs.setup_joins(parts, opts, alias)[0]
     else:
         # Django 1.4-1.5
