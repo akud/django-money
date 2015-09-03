@@ -140,9 +140,7 @@ class MoneyPatched(Money):
         return format_money(self)
 
     def __repr__(self):
-        # small fix for tests
-        return "%s %s" % (self.amount.to_integral_value(ROUND_DOWN),
-                          self.currency)
+        return "%s %s" % (float(self.amount), self.currency)
 
 
 class MoneyFieldProxy(object):
