@@ -1,8 +1,13 @@
+# -*- coding: utf-8 -*-
+from decimal import Decimal
+
 from django import template
 from django.template import TemplateSyntaxError
+
 from moneyed import Money
 
 from ..models.fields import MoneyPatched
+
 
 register = template.Library()
 
@@ -10,14 +15,11 @@ register = template.Library()
 class MoneyLocalizeNode(template.Node):
 
     def __repr__(self):
-        return "<MoneyLocalizeNode %r>" % self.money
+        return '<MoneyLocalizeNode %d %s>' % (self.money.amount, self.money.currency)
 
-    def __init__(self, money=None, amount=None, currency=None, use_l10n=None,
-                 var_name=None):
-
+    def __init__(self, money=None, amount=None, currency=None, use_l10n=None, var_name=None):
         if money and (amount or currency):
-            raise Exception('You can define either "money" or the'
-                            ' "amount" and "currency".')
+            raise Exception('You can define either "money" or the "amount" and "currency".')
 
         self.money = money
         self.amount = amount
@@ -43,11 +45,7 @@ class MoneyLocalizeNode(template.Node):
 
         # GET variable use_l10n
         if tokens[-1].lower() in ('on', 'off'):
-
-            if tokens[-1].lower() == 'on':
-                use_l10n = True
-            else:
-                use_l10n = False
+            use_l10n = tokens[-1].lower() == 'on'
             # remove the already used data
             tokens.pop(-1)
 
@@ -74,14 +72,12 @@ class MoneyLocalizeNode(template.Node):
             if isinstance(money, Money):
                 money = MoneyPatched._patch_to_current_class(money)
             else:
-                raise TemplateSyntaxError('The variable "money" must be an '
-                                          'instance of Money.')
+                raise TemplateSyntaxError('The variable "money" must be an instance of Money.')
 
         elif amount is not None and currency is not None:
-            money = MoneyPatched(float(amount), str(currency))
+            money = MoneyPatched(Decimal(str(amount)), str(currency))
         else:
-            raise TemplateSyntaxError('You must define both variables: '
-                                      'amount and currency.')
+            raise TemplateSyntaxError('You must define both variables: amount and currency.')
 
         money.use_l10n = self.use_l10n
 
